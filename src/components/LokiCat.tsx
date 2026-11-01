@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { HEART_PATH } from './shapes'
 import { loki } from '../content/loki'
 
-export type LokiMood = 'idle' | 'purr' | 'boop' | 'nom'
+export type LokiMood = 'idle' | 'purr' | 'boop' | 'nom' | 'zoomies'
 
 type Props = {
   mood: LokiMood
@@ -20,6 +20,7 @@ const HEAD_ANIMATION = {
   purr: { rotate: 9, x: [0, -1.2, 1.2, -1.2, 1.2, 0], y: 2, scale: 1 },
   boop: { rotate: -4, x: 0, y: -4, scale: 0.96 },
   nom: { rotate: 0, x: 0, y: [0, 3, 0], scale: 1.02 },
+  zoomies: { rotate: [0, -10, 8, -6, 10, 0], x: 0, y: -3, scale: 1.04 },
 }
 
 const HEAD_TRANSITION = {
@@ -27,12 +28,16 @@ const HEAD_TRANSITION = {
   purr: { rotate: { type: 'spring', stiffness: 160, damping: 12 }, x: { duration: 0.25, repeat: Infinity }, y: { duration: 0.3 } },
   boop: { type: 'spring', stiffness: 500, damping: 14 },
   nom: { y: { duration: 0.32, repeat: Infinity }, default: { duration: 0.3 } },
+  zoomies: { rotate: { duration: 0.8, repeat: Infinity }, default: { duration: 0.2 } },
 } as const
 
 /** Loki, a fluffy silver tabby, drawn in SVG. Tap his head to pet him, his nose to boop it. */
 export function LokiCat({ mood, onPet, onBoop, onChirp }: Props) {
   const id = useId()
   const fur = `url(#${id}-fur)`
+  const wild = mood === 'zoomies'
+  // A startled cat's tail puffs right up.
+  const tailWidth = wild ? 34 : 22
 
   const pet = (e: MouseEvent) => {
     e.stopPropagation()
@@ -64,9 +69,9 @@ export function LokiCat({ mood, onPet, onBoop, onChirp }: Props) {
       <g onClick={onChirp} className="cursor-pointer">
         {/* Tail, banded like a tabby's */}
         <g className="anim-swish">
-          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={OUTLINE} strokeWidth="27" strokeLinecap="round" />
-          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={colours.fur} strokeWidth="22" strokeLinecap="round" />
-          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={colours.stripes} strokeWidth="22" strokeDasharray="9 17" strokeDashoffset="-20" opacity=".55" />
+          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={OUTLINE} strokeWidth={tailWidth + 5} strokeLinecap="round" />
+          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={colours.fur} strokeWidth={tailWidth} strokeLinecap="round" />
+          <path d="M168 248 C226 252 250 206 232 166 C222 144 238 124 252 132" fill="none" stroke={colours.stripes} strokeWidth={tailWidth} strokeDasharray="9 17" strokeDashoffset="-20" opacity=".55" />
         </g>
 
         {/* Body */}
@@ -152,8 +157,9 @@ export function LokiCat({ mood, onPet, onBoop, onChirp }: Props) {
             [102, 158].map((cx) => (
               <g key={cx} className="anim-blink">
                 <ellipse cx={cx} cy="102" rx="16" ry="18" fill={`url(#${id}-eye)`} stroke="#4B5563" strokeWidth="2" />
-                <ellipse cx={cx} cy="104" rx="9" ry="13" fill="#1F2937" />
-                <circle cx={cx + 5} cy="95" r="4.5" fill="#fff" />
+                {/* Pupils go huge and round when he spots the fly */}
+                <ellipse cx={cx} cy="103" rx={wild ? 14 : 9} ry={wild ? 15.5 : 13} fill="#1F2937" />
+                <circle cx={cx + 5} cy="95" r={wild ? 5.5 : 4.5} fill="#fff" />
                 <circle cx={cx - 4} cy="110" r="2" fill="#fff" opacity=".85" />
               </g>
             ))
@@ -170,6 +176,12 @@ export function LokiCat({ mood, onPet, onBoop, onChirp }: Props) {
             <g>
               <ellipse cx="130" cy="140" rx="9" ry="8" fill="#BE185D" />
               <ellipse cx="130" cy="144" rx="5.5" ry="3.5" fill="#F9A8D4" />
+            </g>
+          ) : wild ? (
+            <g>
+              <path d="M130 128v4" stroke="#6B7280" strokeWidth="2.6" strokeLinecap="round" />
+              <ellipse cx="130" cy="138" rx="6" ry="5" fill="#BE185D" />
+              <path d="M126.5 135.5l1.5 3 1.5-3M130.5 135.5l1.5 3 1.5-3" fill="#fff" />
             </g>
           ) : (
             <path d="M130 128q0 9-9 10M130 128q0 9 9 10" fill="none" stroke="#6B7280" strokeWidth="2.6" strokeLinecap="round" />

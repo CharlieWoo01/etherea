@@ -153,6 +153,12 @@
   50% { transform: scale(1.012, 1.028); }
 }
 
+@keyframes buzz {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.35); }
+}
+
+.anim-buzz { animation: buzz 0.08s linear infinite; transform-box: fill-box; transform-origin: 50% 100%; }
 .anim-swish { animation: swish 3.2s ease-in-out infinite; transform-box: view-box; transform-origin: 168px 236px; }
 .anim-blink { animation: blink 4.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .anim-twitch { animation: twitch 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 35% 95%; }
@@ -179,6 +185,7 @@
   .anim-bob,
   .anim-shine,
   .anim-swish,
+  .anim-buzz,
   .anim-blink,
   .anim-twitch,
   .anim-breathe {

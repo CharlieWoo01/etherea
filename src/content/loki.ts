@@ -20,12 +20,17 @@ export const loki = {
     pet: ['purrrrrr...', 'yes. right there. perfect.', 'more pets pls 🩶', 'i will allow this forever'],
     boop: ['boop!', '!!', 'hey >:( ...okay one more', 'my nose is not a button'],
     treat: ['nom nom nom', 'TREAT?! for ME?!', 'i love you (and the treats)', 'okay but... another one?'],
+    fly: ['!!!! A FLY !!!!', 'MUST. CATCH. FLY.', 'NOT AGAIN. GET BACK HERE.', 'MAXIMUM ZOOMIES'],
   },
+
+  /** What he says once the fly has escaped and he's trying to look cool. */
+  afterFly: ['...i meant to do that.', 'it got away. this time.', 'i caught it. (i did not)', '*licks paw casually*'],
 
   actions: {
     pet: 'Pet Loki',
     boop: 'Boop his nose',
     treat: 'Give a treat',
+    fly: 'Release a fly',
   },
 
   meterLabel: 'Loki-approval meter',

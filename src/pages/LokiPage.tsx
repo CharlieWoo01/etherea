@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { ArrowLeft, Fish, Hand, RotateCcw, Sparkle } from 'lucide-react'
+import { ArrowLeft, Bug, Fish, Hand, RotateCcw, Sparkle } from 'lucide-react'
+import { Fly } from '../components/Fly'
 import { HeartBurst } from '../components/HeartBurst'
 import { LokiCat, type LokiMood } from '../components/LokiCat'
 import { HeartShape, PawShape } from '../components/shapes'
@@ -11,14 +12,30 @@ const MAX_LOVE = 5
 
 type Reaction = keyof typeof loki.reactions
 
-const MOOD_FOR: Record<Reaction, LokiMood> = { pet: 'purr', boop: 'boop', treat: 'nom' }
-const MOOD_DURATION: Record<Reaction, number> = { pet: 2200, boop: 1100, treat: 2000 }
+const MOOD_FOR: Record<Reaction, LokiMood> = { pet: 'purr', boop: 'boop', treat: 'nom', fly: 'zoomies' }
+const MOOD_DURATION: Record<Reaction, number> = { pet: 2200, boop: 1100, treat: 2000, fly: 3700 }
 
 const ACTIONS: { kind: Reaction; Icon: typeof Hand }[] = [
   { kind: 'pet', Icon: Hand },
   { kind: 'boop', Icon: Sparkle },
   { kind: 'treat', Icon: Fish },
+  { kind: 'fly', Icon: Bug },
 ]
+
+/** The fly's escape route, and Loki tearing around a beat behind it (px from his spot). */
+const CHASE_SECONDS = 3.4
+const FLY_PATH = {
+  x: [30, -60, -120, -40, 70, 130, 60, -90, -20, 220],
+  y: [-40, -120, -60, -140, -70, -130, -50, -110, -160, -320],
+  rotate: [0, -30, 20, -20, 30, -10, 25, -30, 10, 40],
+}
+const ZOOMIES = {
+  x: [0, -40, -95, -60, 30, 95, 70, -60, -30, 0],
+  y: [0, -26, 0, -38, 0, -30, 0, -44, 0, 0],
+  rotate: [0, -14, -6, 10, 14, 6, -12, -16, 4, 0],
+  scaleX: [1, -1, -1, -1, 1, 1, 1, -1, -1, 1],
+  scaleY: [1, 0.92, 1.06, 0.94, 1.05, 0.93, 1.06, 0.92, 1.04, 1],
+}
 
 // Little paw prints wandering across the page.
 const TRAIL = [
@@ -46,25 +63,36 @@ type Props = {
 export function LokiPage({ onBackToLetter, onRestart }: Props) {
   const [mood, setMood] = useState<LokiMood>('idle')
   const [message, setMessage] = useState({ text: loki.chirps[0], key: 0 })
-  const [counts, setCounts] = useState({ pet: 0, boop: 0, treat: 0, chirp: 1 })
+  const [counts, setCounts] = useState({ pet: 0, boop: 0, treat: 0, fly: 0, chirp: 1 })
   const [love, setLove] = useState(0)
   const [purrs, setPurrs] = useState(0)
-  const moodTimer = useRef<number | undefined>(undefined)
+  const timers = useRef<number[]>([])
 
-  useEffect(() => () => window.clearTimeout(moodTimer.current), [])
+  const clearTimers = () => {
+    timers.current.forEach((t) => window.clearTimeout(t))
+    timers.current = []
+  }
+  useEffect(() => clearTimers, [])
+
+  const later = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms))
 
   const say = (text: string) => setMessage((m) => ({ text, key: m.key + 1 }))
 
   const react = (kind: Reaction) => {
+    // No interrupting a cat mid-zoomies.
+    if (mood === 'zoomies') return
+
+    const n = counts[kind]
     const lines = loki.reactions[kind]
-    say(lines[counts[kind] % lines.length])
+    say(lines[n % lines.length])
     setCounts((c) => ({ ...c, [kind]: c[kind] + 1 }))
     setMood(MOOD_FOR[kind])
     setLove((l) => Math.min(MAX_LOVE, l + 1))
     if (kind === 'pet') setPurrs((p) => p + 1)
 
-    window.clearTimeout(moodTimer.current)
-    moodTimer.current = window.setTimeout(() => setMood('idle'), MOOD_DURATION[kind])
+    clearTimers()
+    later(MOOD_DURATION[kind], () => setMood('idle'))
+    if (kind === 'fly') later(MOOD_DURATION.fly - 200, () => say(loki.afterFly[n % loki.afterFly.length]))
   }
 
   const chirp = () => {
@@ -138,7 +166,42 @@ export function LokiPage({ onBackToLetter, onRestart }: Props) {
         </div>
 
         <div className="relative mx-auto mt-2 w-[min(72vw,300px,calc((100dvh-24rem)*0.85))] min-w-[200px]">
-          <LokiCat mood={mood} onPet={() => react('pet')} onBoop={() => react('boop')} onChirp={chirp} />
+          <motion.div
+            animate={mood === 'zoomies' ? ZOOMIES : { x: 0, y: 0, rotate: 0, scaleX: 1, scaleY: 1 }}
+            transition={mood === 'zoomies' ? { duration: CHASE_SECONDS, ease: 'easeInOut' } : { duration: 0.3 }}
+            style={{ originY: 1 }}
+          >
+            <LokiCat mood={mood} onPet={() => react('pet')} onBoop={() => react('boop')} onChirp={chirp} />
+          </motion.div>
+
+          {/* The fly, and Loki's alarm */}
+          {mood === 'zoomies' && (
+            <>
+              <motion.div
+                key={`fly-${counts.fly}`}
+                aria-hidden="true"
+                className="pointer-events-none absolute top-[30%] left-1/2 -ml-5 w-10 drop-shadow-[0_2px_3px_rgba(31,41,55,0.25)]"
+                initial={{ opacity: 0, x: 60, y: -10 }}
+                animate={{ ...FLY_PATH, opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 0] }}
+                transition={{ duration: CHASE_SECONDS, ease: 'easeInOut' }}
+              >
+                <Fly className="w-full" />
+              </motion.div>
+              {['!', '!!', '!'].map((mark, i) => (
+                <motion.span
+                  key={`${counts.fly}-${i}`}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-[2%] font-hand text-4xl font-bold text-rose"
+                  style={{ left: `${28 + i * 22}%` }}
+                  initial={{ opacity: 0, y: 10, scale: 0.4 }}
+                  animate={{ opacity: [0, 1, 1, 0], y: -14, scale: 1, rotate: (i - 1) * 18 }}
+                  transition={{ duration: 1.1, delay: i * 0.08 }}
+                >
+                  {mark}
+                </motion.span>
+              ))}
+            </>
+          )}
 
           {/* Hearts drifting up while he purrs */}
           {purrs > 0 &&
