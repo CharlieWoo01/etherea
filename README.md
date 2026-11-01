@@ -58,6 +58,7 @@ All the text lives in `src/content/`. You don't need to touch any components to 
 | --- | --- |
 | [src/content/letter.ts](src/content/letter.ts) | The letter: greeting, paragraphs, closing line and signature |
 | [src/content/site.ts](src/content/site.ts) | Landing page, transition, envelope and ending copy |
+| [src/content/loki.ts](src/content/loki.ts) | Loki's page: what he says, his note, and his colours (eyes, fur, stripes, collar) |
 
 In the letter, wrap words in `*asterisks*` to give them a handwritten pink highlight.
 
@@ -72,6 +73,7 @@ src/
     Envelope.tsx          the CSS/SVG envelope and its opening sequence
     LetterPaper.tsx       the unfolded cream letter
     LetterEnding.tsx      cuddle button, hug, heart shower, sign-off
+    LokiCat.tsx           Loki drawn in SVG, with purr / boop / nom moods
     HeartButton.tsx       the cuddle button
     HugHearts.tsx         two hearts hugging
     HeartBurst.tsx        one-off flurry of hearts (rising or showering)
@@ -82,6 +84,7 @@ src/
     LandingPage.tsx       experience 1: the mysterious landing page
     TransitionPage.tsx    the in-between moment
     LetterPage.tsx        experience 2: envelope → letter
+    LokiPage.tsx          experience 3: Loki the cat (also at …/etherea/#loki)
   content/                all editable copy
   styles/globals.css      theme colours, fonts, paper texture, ambient animations
   App.tsx                 scene switcher
@@ -96,7 +99,7 @@ src/
 2. Add its id to the `Scene` type in `App.tsx` and render it in the `AnimatePresence` block.
 3. Put its copy in `src/content/`.
 
-If Etherea grows into many separate pages that should each have a shareable link, swap the scene state for a hash-based router (hash routes work on GitHub Pages without extra config).
+To give a scene its own shareable link, add its id to `LINKABLE` in `App.tsx`. It then lives at `…/etherea/#<id>` (this is how `#loki` works). Hash links need no extra GitHub Pages config.
 
 ## Accessibility & motion
 

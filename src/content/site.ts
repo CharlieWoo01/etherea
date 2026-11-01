@@ -28,5 +28,6 @@ export const ending = {
   cuddleAgain: 'Another cuddle 🫂',
   cuddleMessage: "One day I won't have to send virtual cuddles anymore... 🥹💗",
   madeWith: 'Made with love, just for you.',
+  lokiTeaser: 'psst... someone else wants to say hi',
   restart: 'Close the letter',
 }

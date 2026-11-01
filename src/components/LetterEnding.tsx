@@ -5,10 +5,16 @@ import { HeartBurst } from './HeartBurst'
 import { HeartButton } from './HeartButton'
 import { HugHearts } from './HugHearts'
 import { Logo } from './Logo'
+import { PawShape } from './shapes'
 import { ending } from '../content/site'
 
+type Props = {
+  onClose: () => void
+  onMeetLoki: () => void
+}
+
 /** The cuddle button, its little reward, and the sign-off underneath the letter. */
-export function LetterEnding({ onClose }: { onClose: () => void }) {
+export function LetterEnding({ onClose, onMeetLoki }: Props) {
   const [cuddles, setCuddles] = useState(0)
   const rewardRef = useRef<HTMLDivElement>(null)
 
@@ -54,7 +60,20 @@ export function LetterEnding({ onClose }: { onClose: () => void }) {
 
       {cuddles > 0 && <HeartBurst key={cuddles} direction="down" count={36} />}
 
-      <footer className="mt-16 flex flex-col items-center gap-3 pb-[max(2rem,env(safe-area-inset-bottom))]">
+      <motion.button
+        type="button"
+        onClick={onMeetLoki}
+        whileHover={{ scale: 1.04, rotate: 1 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 16 }}
+        className="glass mt-14 inline-flex items-center gap-2.5 rounded-full py-2.5 pr-5 pl-3 font-hand text-[1.45rem] leading-none font-semibold text-berry"
+      >
+        <PawShape aria-hidden="true" className="anim-heartbeat size-6 text-[#9CA3AF]" />
+        {ending.lokiTeaser}
+        <span aria-hidden="true">🐾</span>
+      </motion.button>
+
+      <footer className="mt-14 flex flex-col items-center gap-3 pb-[max(2rem,env(safe-area-inset-bottom))]">
         <p className="font-display text-base text-berry/75 italic">{ending.madeWith}</p>
         <Logo size="sm" />
         <button

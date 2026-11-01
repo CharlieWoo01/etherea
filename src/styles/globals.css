@@ -130,6 +130,34 @@
   60%, 100% { transform: translateX(360%) skewX(-20deg); }
 }
 
+/* Loki's idle life: tail swish, blinks, ear twitch, breathing. */
+@keyframes swish {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(9deg); }
+}
+
+@keyframes blink {
+  0%, 93%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.08); }
+}
+
+@keyframes twitch {
+  0%, 86%, 100% { transform: rotate(0deg); }
+  89% { transform: rotate(-11deg); }
+  92% { transform: rotate(4deg); }
+  95% { transform: rotate(-6deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.012, 1.028); }
+}
+
+.anim-swish { animation: swish 3.2s ease-in-out infinite; transform-box: view-box; transform-origin: 168px 236px; }
+.anim-blink { animation: blink 4.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.anim-twitch { animation: twitch 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 35% 95%; }
+.anim-breathe { animation: breathe 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+
 .anim-rise { animation: rise var(--dur, 18s) linear infinite; will-change: transform, opacity; }
 .anim-sway { animation: sway var(--sdur, 5s) ease-in-out infinite; }
 .anim-twinkle { animation: twinkle var(--dur, 3s) ease-in-out infinite; }
@@ -149,7 +177,11 @@
   .anim-glow,
   .anim-heartbeat,
   .anim-bob,
-  .anim-shine {
+  .anim-shine,
+  .anim-swish,
+  .anim-blink,
+  .anim-twitch,
+  .anim-breathe {
     animation: none !important;
   }
 

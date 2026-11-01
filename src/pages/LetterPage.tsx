@@ -8,8 +8,15 @@ import { letterScene } from '../content/site'
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const
 
-export function LetterPage({ onClose }: { onClose: () => void }) {
-  const [opened, setOpened] = useState(false)
+type Props = {
+  onClose: () => void
+  onMeetLoki: () => void
+  /** Skip the envelope, e.g. when coming back from Loki's page. */
+  startOpen?: boolean
+}
+
+export function LetterPage({ onClose, onMeetLoki, startOpen = false }: Props) {
+  const [opened, setOpened] = useState(startOpen)
   const handleOpened = useCallback(() => setOpened(true), [])
 
   return (
@@ -57,7 +64,7 @@ export function LetterPage({ onClose }: { onClose: () => void }) {
         ) : (
           <motion.section key="letter" className="w-full pt-10" initial={{ opacity: 1 }}>
             <LetterPaper content={letter} />
-            <LetterEnding onClose={onClose} />
+            <LetterEnding onClose={onClose} onMeetLoki={onMeetLoki} />
           </motion.section>
         )}
       </AnimatePresence>

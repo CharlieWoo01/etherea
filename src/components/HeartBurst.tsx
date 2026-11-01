@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'motion/react'
-import { HeartShape } from './shapes'
+import { HeartShape, PawShape } from './shapes'
 
 const COLOURS = ['#F472B6', '#DB2777', '#F9A8D4', '#FBCFE8', '#E9D5FF', '#EC4899']
+const PAW_COLOURS = ['#9CA3AF', '#C3C8D0', '#F472B6', '#F9A8D4', '#6B7280', '#DB2777']
 
 const random = (min: number, max: number) => min + Math.random() * (max - min)
 
@@ -11,10 +12,12 @@ type Props = {
   /** "up" drifts hearts up from below; "down" showers them from above. */
   direction: 'up' | 'down'
   count?: number
+  /** Mix little paw prints in with the hearts. */
+  paws?: boolean
 }
 
 /** A one-off flurry of hearts across the whole screen. Remount (change `key`) to replay. */
-export function HeartBurst({ direction, count = 30 }: Props) {
+export function HeartBurst({ direction, count = 30, paws = false }: Props) {
   const hearts = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => ({
@@ -25,9 +28,10 @@ export function HeartBurst({ direction, count = 30 }: Props) {
         duration: random(2.6, 4.2),
         sway: random(-40, 40),
         spin: random(-50, 50),
-        colour: COLOURS[i % COLOURS.length],
+        colour: (paws ? PAW_COLOURS : COLOURS)[i % COLOURS.length],
+        paw: paws && i % 2 === 0,
       })),
-    [count, direction],
+    [count, direction, paws],
   )
 
   const vh = window.innerHeight / 100
@@ -48,7 +52,11 @@ export function HeartBurst({ direction, count = 30 }: Props) {
           animate={{ y: to, x: [0, h.sway, -h.sway / 2, h.sway / 3], rotate: h.spin, opacity: [0, 1, 1, 0] }}
           transition={{ duration: h.duration, delay: h.delay, ease: direction === 'up' ? 'easeOut' : 'easeIn' }}
         >
-          <HeartShape className="drop-shadow-[0_2px_6px_rgba(219,39,119,0.25)]" style={{ width: h.size, height: h.size }} />
+          {h.paw ? (
+            <PawShape style={{ width: h.size, height: h.size }} />
+          ) : (
+            <HeartShape className="drop-shadow-[0_2px_6px_rgba(219,39,119,0.25)]" style={{ width: h.size, height: h.size }} />
+          )}
         </motion.span>
       ))}
     </div>,
