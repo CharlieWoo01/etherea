@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blush: #fff5fa;
+  --color-candy: #f472b6;
+  --color-petal: #fbcfe8;
+  --color-rose: #db2777;
+  --color-cream: #fffbf7;
+  --color-berry: #831843;
+  --color-lavender: #e9d5ff;
+
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font-sans: "Quicksand", ui-rounded, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--color-blush);
+    color: var(--color-berry);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: clip;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-petal);
+    color: var(--color-berry);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-candy);
+    outline-offset: 4px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* ── Surfaces ─────────────────────────────────────────────── */
+
+.glass {
+  background: rgb(255 255 255 / 0.45);
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    0 18px 40px -18px rgb(219 39 119 / 0.3),
+    inset 0 1px 0 rgb(255 255 255 / 0.9);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* Warm cream paper with a faint grain and soft pink-tinted edges. */
+.paper {
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(120% 60% at 50% 0%, rgb(255 255 255 / 0.9), transparent 70%),
+    radial-gradient(150% 110% at 50% 50%, transparent 62%, rgb(251 207 232 / 0.38) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .25  0 0 0 0 .3  0 0 0 .55 -.22'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #f9a8d4 0%, var(--color-candy) 30%, var(--color-rose) 65%, var(--color-berry) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.highlight {
+  background: linear-gradient(transparent 58%, rgb(251 207 232 / 0.85) 58%, rgb(251 207 232 / 0.85) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ── Ambient loops (CSS keeps these off the main thread) ─── */
+
+@keyframes rise {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  10% { opacity: var(--o, 0.7); }
+  85% { opacity: var(--o, 0.7); }
+  100% { transform: translate3d(0, -118vh, 0); opacity: 0; }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateX(calc(var(--sway, 14px) * -1)) rotate(-10deg); }
+  50% { transform: translateX(var(--sway, 14px)) rotate(10deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { transform: scale(0.3) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(60deg); opacity: 1; }
+}
+
+@keyframes drift {
+  from { transform: translate3d(-5vw, 0, 0); }
+  to { transform: translate3d(5vw, 0, 0); }
+}
+
+@keyframes blob {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(var(--bx, 4vw), var(--by, 3vh), 0) scale(1.15); }
+}
+
+@keyframes glow {
+  0%, 100% { opacity: 0.5; transform: scale(0.96); }
+  50% { opacity: 0.95; transform: scale(1.06); }
+}
+
+@keyframes heartbeat {
+  0%, 60%, 100% { transform: scale(1); }
+  12% { transform: scale(1.22); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.14); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-8px) rotate(calc(var(--r, 0deg) * -1)); }
+}
+
+@keyframes shine {
+  0% { transform: translateX(-160%) skewX(-20deg); }
+  60%, 100% { transform: translateX(360%) skewX(-20deg); }
+}
+
+.anim-rise { animation: rise var(--dur, 18s) linear infinite; will-change: transform, opacity; }
+.anim-sway { animation: sway var(--sdur, 5s) ease-in-out infinite; }
+.anim-twinkle { animation: twinkle var(--dur, 3s) ease-in-out infinite; }
+.anim-drift { animation: drift var(--dur, 40s) ease-in-out infinite alternate; }
+.anim-blob { animation: blob var(--dur, 22s) ease-in-out infinite alternate; }
+.anim-glow { animation: glow 3.2s ease-in-out infinite; }
+.anim-heartbeat { animation: heartbeat 2.4s ease-in-out infinite; }
+.anim-bob { animation: bob var(--dur, 4s) ease-in-out infinite; }
+.anim-shine { animation: shine 4.5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise,
+  .anim-sway,
+  .anim-twinkle,
+  .anim-drift,
+  .anim-blob,
+  .anim-glow,
+  .anim-heartbeat,
+  .anim-bob,
+  .anim-shine {
+    animation: none !important;
+  }
+
+  /* Park the floating hearts at a resting spot instead of off-screen. */
+  .anim-rise {
+    transform: translate3d(0, calc(var(--rest, 50vh) * -1), 0);
+    opacity: calc(var(--o, 0.7) * 0.6);
+  }
+
+  .anim-twinkle {
+    opacity: 0.6;
+  }
+}
